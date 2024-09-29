@@ -1,21 +1,27 @@
-server:
-  port: 8090
-spring:
-  application:
-    name: api-gateway
-  # customer
-  cloud:
-    gateway:
-      routes:
-        - id: msv-customer
-          uri: http://localhost:9010
-          predicates:
-            - Path=/api/v1/customers/**
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty.http.client: DEBUG
-    org.springframework.web: DEBUG
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${random.uuid}
+#server:
+#  port: 8090
+#spring:
+#  application:
+#    name: api-gateway
+#    version: "@project.version@"
+#  banner:
+#    location: classpath:banner/banner.txt
+#  # customer
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: msv-customer
+#          uri: http://localhost:9010
+#          predicates:
+#            - Path=/api/v1/customers/**
+#  #logging:
+#  #  level:
+#  #    org.springframework.cloud.gateway: DEBUG
+#  #    reactor.netty.http.client: DEBUG
+#  #    org.springframework.web: DEBUG
+#  output:
+#    ansi:
+#      enabled: ALWAYS
+#eureka:
+#  instance:
+#    instance-id: ${spring.application.name}:${random.uuid}
