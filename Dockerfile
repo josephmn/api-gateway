@@ -20,12 +20,13 @@ ENTRYPOINT ["java", "-jar", "api-gateway-1.0.0.jar"]
 # docker run -d -p 8090:8090 --name api-gateway api-gateway:1.0
 
 # Ejecutar imagen docker con enviroment and network
-# docker run -d -p 8090:8090 --name api-gateway --network=azure-net --env CONFIG_SERVER=http://config-server:8888 --env EUREKA_INSTANCE_HOSTNAME=discovery-service discovery-service:1.0
+# docker run -d -p 8090:8090 --name api-gateway --network=azure-net --env CONFIG_SERVER=http://config-server:8888 api-gateway:1.0
+# docker run -d -p 8090:8090 --name api-gateway --network=azure-net --env CONFIG_SERVER=http://config-server:8888 --env EUREKA_INSTANCE_HOSTNAME=api-gateway api-gateway:1.0
 
 # Creando una red de Docker
 # docker network create azure-net
-# docker run -p 8761:8761 --name discovery-service --network=azure-net config-server:1.0    #si quieres ejecutar en modo acoplado
-# docker run -d -p 8761:8761 --name discovery-service --network=azure-net config-server:1.0     #ejecución modo desacoplado (-d)
+# docker run -p 8090:8090 --name api-gateway --network=azure-net api-gateway:1.0    #si quieres ejecutar en modo acoplado
+# docker run -d -p 8090:8090 --name api-gateway --network=azure-net api-gateway:1.0     #ejecución modo desacoplado (-d)
 
 # Verificar conexiones en la red Docker
 # docker network inspect azure-net
