@@ -1,3 +1,5 @@
+#server:
+#  port: 8090
 spring:
   application:
     name: api-gateway
@@ -21,3 +23,8 @@ eureka:
     instance-id: ${spring.application.name}:${random.uuid}
     lease-expiration-duration-in-seconds: 5
     lease-renewal-interval-in-seconds: 3
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, bus-refresh  # Activa el endpoint de refresh y bus-refresh
