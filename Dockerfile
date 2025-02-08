@@ -9,9 +9,11 @@ RUN mvn package -DskipTests
 # Etapa final
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=build /app/target/api-gateway-1.0.0.jar ./api-gateway-1.0.0.jar
+ARG NAME_APP
+ARG JAR_VERSION
+COPY --from=build /app/target/${NAME_APP}-${JAR_VERSION}.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "api-gateway-1.0.0.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Construir imagen docker
 # docker build -t api-gateway:1.0 .
