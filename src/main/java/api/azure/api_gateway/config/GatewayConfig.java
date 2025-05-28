@@ -1,6 +1,7 @@
 package api.azure.api_gateway.config;
 
 import api.azure.api_gateway.filter.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -10,49 +11,48 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RefreshScope
+@RequiredArgsConstructor
 public class GatewayConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ApplicationPropertiesPath applicationPropertiesPath;
 
     @Bean
     @RefreshScope
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-        return builder.routes()
-            // Ruta para servicios de autenticación (sin JWT)
-            .route("auth-service", r -> r
-                .path("/auth/**")
-                .uri("lb://auth-service"))
+        RouteLocatorBuilder.Builder routes = builder.routes();
+        // Configurar rutas públicas (sin JWT)
+        configurePublicRoutes(routes);
 
-            // Ruta para servicio de usuarios (con JWT)
-            .route("user-service", r -> r
-                .path("/api/users/**")
-                .filters(f -> f.filter(jwtAuthenticationFilter.apply(new JwtAuthenticationFilter.Config())))
-                .uri("lb://user-service"))
+        // Configurar rutas privadas (con JWT)
+        configurePrivateRoutes(routes);
 
-            // Ruta para servicio de productos (con JWT)
-            .route("product-service", r -> r
-                .path("/api/products/**")
-                .filters(f -> f.filter(jwtAuthenticationFilter.apply(new JwtAuthenticationFilter.Config())))
-                .uri("lb://product-service"))
+        return routes.build();
+    }
 
-            // Ruta para servicio de pedidos (con JWT)
-            .route("order-service", r -> r
-                .path("/api/orders/**")
-                .filters(f -> f.filter(jwtAuthenticationFilter.apply(new JwtAuthenticationFilter.Config())))
-                .uri("lb://order-service"))
+    private void configurePublicRoutes(RouteLocatorBuilder.Builder routes) {
+        // Ruta específica para auth-service
+        routes.route("auth-service", r -> r
+            .path("/auth/**")
+            .uri("lb://auth-service"));
 
-            // Ruta para servicio de customer (con JWT)
-            .route("customer-service", r -> r
-                .path("/api/v1/customers/**")
-                .filters(f -> f.filter(jwtAuthenticationFilter.apply(new JwtAuthenticationFilter.Config())))
-                .uri("lb://msv-customer-lb"))
+        // Ruta específica para actuator
+        routes.route("actuator", r -> r
+            .path("/actuator/**")
+            .uri("http://localhost:8090"));
 
-            // Ruta para actuator endpoints (sin JWT para monitoring)
-            .route("actuator", r -> r
-                .path("/actuator/**")
-                .uri("http://localhost:8090"))
+        // Puedes agregar más rutas públicas específicas aquí si las necesitas
+    }
 
-            .build();
+    private void configurePrivateRoutes(RouteLocatorBuilder.Builder routes) {
+        // Configurar rutas privadas desde el archivo de configuración
+        if (applicationPropertiesPath.getPrivatePaths() != null) {
+            applicationPropertiesPath.getPrivatePaths().forEach(privatePath -> {
+                routes.route(privatePath.getRoute(), r -> r
+                    .path(privatePath.getPath())
+                    .filters(f -> f.filter(jwtAuthenticationFilter.apply(new JwtAuthenticationFilter.Config())))
+                    .uri(privatePath.getUrl()));
+            });
+        }
     }
 }
