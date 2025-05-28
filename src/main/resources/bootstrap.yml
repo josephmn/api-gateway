@@ -13,6 +13,28 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-key: ${JWT_SECRET:mySecretKey123456789012345678901234567890}
+# Configuración de Swagger/OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /index.html
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway
+        primaryName: API Gateway
+# Configuración JWT
+jwt:
+  secret: ${JWT_SECRET:mySecretKey123456789012345678901234567890}
+  expiration: ${JWT_EXPIRATION:86400000} # 24 horas en milisegundos
 eureka:
   client:
     service-url:
@@ -27,4 +49,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, bus-refresh  # Activa el endpoint de refresh y bus-refresh
+        include: refresh, bus-refresh, health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+  security:
+    enabled: false # Deshabilitar seguridad en endpoints de management
