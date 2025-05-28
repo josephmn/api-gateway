@@ -1,16 +1,16 @@
 package api.azure.api_gateway.util;
 
+import api.azure.api_gateway.config.ApplicationPropertiesJwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -19,16 +19,13 @@ import static io.jsonwebtoken.Jwts.*;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    @Value("${jwt.secret:mySecretKey123456789012345678901234567890}")
-    private String secret;
-
-    @Value("${jwt.expiration:86400000}") // 24 horas por defecto
-    private Long expiration;
+    private final ApplicationPropertiesJwt applicationPropertiesJwt;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(applicationPropertiesJwt.getSecret().getBytes());
     }
 
     public String extractUsername(String token) {
@@ -91,8 +88,14 @@ public class JwtUtil {
             .claim("roles", roles)
             .claim("userId", userId)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
+            .setExpiration(new Date(System.currentTimeMillis() + applicationPropertiesJwt.getExpiration()))
             .signWith(getSigningKey())
             .compact();
     }
+
+//    @PostConstruct
+//    public void init() {
+//        log.info("JWT Secret: {}", applicationProperties.getSecret());
+//        log.info("JWT Expiration: {}", applicationProperties.getExpiration());
+//    }
 }

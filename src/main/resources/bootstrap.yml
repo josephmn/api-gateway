@@ -10,31 +10,19 @@ spring:
     config:
       uri: ${CONFIG_SERVER:http://localhost:8888}
       fail-fast: true
+    vault:
+      enabled: true
+      host: ${VAULT_HOST:localhost}
+      port: ${VAULT_PORT:8200}
+      scheme: http
+      authentication: TOKEN # Tipo de autenticación que usarás (token, AppRole, etc.)
+      token: 00000000-0000-0000-0000-000000000000 # Reemplaza con tu token de root
+      kv:
+        enabled: true
+        backend: secret # El nombre de tu backend de secretos
   output:
     ansi:
       enabled: ALWAYS
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          secret-key: ${JWT_SECRET:mySecretKey123456789012345678901234567890}
-# Configuración de Swagger/OpenAPI
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-    enabled: true
-  swagger-ui:
-    path: /index.html
-    enabled: true
-    config-url: /v3/api-docs/swagger-config
-    urls:
-      - url: /v3/api-docs
-        name: API Gateway
-        primaryName: API Gateway
-# Configuración JWT
-jwt:
-  secret: ${JWT_SECRET:mySecretKey123456789012345678901234567890}
-  expiration: ${JWT_EXPIRATION:86400000} # 24 horas en milisegundos
 eureka:
   client:
     service-url:
