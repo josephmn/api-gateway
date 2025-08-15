@@ -4,8 +4,8 @@ spring:
   application:
     name: api-gateway
     version: "@project.version@"
-  profiles:
-    active: prod
+  banner:
+    location: classpath:banner/banner-${SPRING_PROFILES_ACTIVE:dev}.txt
   cloud:
     config:
       uri: ${CONFIG_SERVER:http://localhost:8888}
@@ -43,3 +43,8 @@ management:
       show-details: always
   security:
     enabled: false # Deshabilitar seguridad en endpoints de management
+
+created:
+  by: Joseph Magallanes
+  email: josephcarlos.jcmn@gmail.com
+  date: 2025-08-01

@@ -11,11 +11,15 @@ pipeline {
     environment {
         NAME_APP = 'api-gateway-dev'
         SCANNER_HOME = tool 'sonar-scanner'
-        CONTAINER_PORT = '8088'
-        HOST_PORT = '8088'
+        CONTAINER_PORT = '8090'
+        HOST_PORT = '8090'
         NETWORK = 'azure-net-dev'
-        CONFIG_SERVER = "localhost"
+        SONAR_TOKEN = credentials('sonar-token')
+        CONFIG_SERVER = "config-server-dev"
         PORT_CONFIG_SERVER = "8886"
+        EUREKA_SERVER = "discovery-service-dev"
+        PORT_EUREKA_SERVER = "8759"
+        VAULT_SERVER = "vault"
     }
 
     stages {
@@ -38,17 +42,15 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('sonar-server') {
-                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                        echo "######################## : ======> EJECUTANDO QA SONARQUBE..."
-                        bat """
-                            "${SCANNER_HOME}\\bin\\sonar-scanner" ^
-                            -Dsonar.url=http://localhost:9000/ ^
-                            -Dsonar.login=${SONAR_TOKEN} ^
-                            -Dsonar.projectName=config-server ^
-                            -Dsonar.java.binaries=. ^
-                            -Dsonar.projectKey=config-server
-                        """
-                    }
+                    echo "######################## : ======> EJECUTANDO QA SONARQUBE..."
+                    bat """
+                        "${SCANNER_HOME}\\bin\\sonar-scanner" ^
+                        -Dsonar.url=http://localhost:9000/ ^
+                        -Dsonar.login=%SONAR_TOKEN% ^
+                        -Dsonar.projectName=api-gateway ^
+                        -Dsonar.java.binaries=. ^
+                        -Dsonar.projectKey=api-gateway
+                    """
                 }
             }
         }
@@ -71,7 +73,13 @@ pipeline {
             steps {
                 echo "######################## : ======> EJECUTANDO BUILD APPLICATION MAVEN..."
                 // Usar 'bat' para ejecutar comandos en Windows, para Linux usar 'sh'
-                bat "mvn clean install -DCONFIG_SERVER=http://${CONFIG_SERVER}:${PORT_CONFIG_SERVER}"
+                bat """
+                    mvn clean install \
+                    -Dspring-boot.run.profiles=dev \
+                    -DVAULT_HOST=localhost \
+                    -DVAULT_PORT=8200 \
+                    -DCONFIG_SERVER=http://localhost:${PORT_CONFIG_SERVER}
+                """
             }
         }
 
@@ -102,22 +110,13 @@ pipeline {
             }
             steps {
                 script {
-
-                    def localhost = "localhost"
-
-                    def configServer = "config-server-dev"
-                    def portConfigServer = "8886"
-
-                    def eurekaServer = "discovery-service-dev"
-                    def portEurekaServer = "8761"
-
                     echo "######################## : ======> EJECUTANDO DOCKER BUILD AND RUN..."
 
                     echo "=========> Verificando que el config-server esté en ejecución..."
                     // Verificar si el config-server está en ejecución
                     bat """
                     for /L %%i in (1,1,30) do (
-                        powershell -Command "(Invoke-WebRequest -Uri http://${localhost}:${portConfigServer}/actuator/health -UseBasicParsing).StatusCode" && exit || timeout 5
+                        powershell -Command "(Invoke-WebRequest -Uri http://localhost:${PORT_CONFIG_SERVER}/actuator/health -UseBasicParsing).StatusCode" && exit || timeout 5
                     )
                     """
 
@@ -183,8 +182,10 @@ pipeline {
                     bat """
                         echo "=========> Desplegando el contenedor: ${NAME_APP}..."
                         docker run -d --name ${NAME_APP} -p ${HOST_PORT}:${CONTAINER_PORT} --network=${NETWORK} ^
-                        --env CONFIG_SERVER=http://${configServer}:${portConfigServer} ^
-                        --env EUREKA_SERVER=http://${eurekaServer}:${portEurekaServer}/eureka ^
+                        --env CONFIG_SERVER=http://${CONFIG_SERVER}:${PORT_CONFIG_SERVER} ^
+                        --env EUREKA_SERVER=http://${EUREKA_SERVER}:${PORT_EUREKA_SERVER}/eureka ^
+                        --env VAULT_HOST=${VAULT_SERVER} ^
+                        --env SPRING_PROFILES_ACTIVE=dev ^
                         ${NAME_APP}:${version}
                     """
                 }
