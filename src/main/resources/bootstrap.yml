@@ -1,5 +1,3 @@
-#server:
-#  port: 8090
 spring:
   application:
     name: api-gateway
@@ -15,11 +13,13 @@ spring:
       host: ${VAULT_HOST:localhost}
       port: ${VAULT_PORT:8200}
       scheme: http
-      authentication: TOKEN # Tipo de autenticación que usarás (token, AppRole, etc.)
-      token: 00000000-0000-0000-0000-000000000000 # Reemplaza con tu token de root
+      authentication: APPROLE
+      app-role:
+        role-id: ${VAULT_ROLE_ID}
+        secret-id: ${VAULT_SECRET_ID}
       kv:
         enabled: true
-        backend: secret # El nombre de tu backend de secretos
+        backend: secret
   output:
     ansi:
       enabled: ALWAYS
@@ -37,7 +37,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, bus-refresh, health, info, metrics
+        include: refresh, bus-refresh, health, info, metrics, gateway, openapi
   endpoint:
     health:
       show-details: always

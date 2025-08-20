@@ -19,7 +19,9 @@ pipeline {
         PORT_CONFIG_SERVER = "8886"
         EUREKA_SERVER = "discovery-service-dev"
         PORT_EUREKA_SERVER = "8759"
-        VAULT_SERVER = "vault"
+        VAULT_SERVER = "vault-server"
+        VAULT_ROLE_ID = credentials('vault-role-id')
+        VAULT_SECRET_ID = credentials('vault-secret-id')
     }
 
     stages {
@@ -78,7 +80,9 @@ pipeline {
                     -Dspring-boot.run.profiles=dev \
                     -DVAULT_HOST=localhost \
                     -DVAULT_PORT=8200 \
-                    -DCONFIG_SERVER=http://localhost:${PORT_CONFIG_SERVER}
+                    -DCONFIG_SERVER=http://localhost:${PORT_CONFIG_SERVER} \
+                    -DVAULT_ROLE_ID=%VAULT_ROLE_ID% \
+                    -DVAULT_ROLE_ID=%VAULT_ROLE_ID%
                 """
             }
         }
@@ -186,6 +190,8 @@ pipeline {
                         --env EUREKA_SERVER=http://${EUREKA_SERVER}:${PORT_EUREKA_SERVER}/eureka ^
                         --env VAULT_HOST=${VAULT_SERVER} ^
                         --env SPRING_PROFILES_ACTIVE=dev ^
+                        --env VAULT_ROLE_ID=%VAULT_ROLE_ID% ^
+                        --env VAULT_SECRET_ID=%VAULT_SECRET_ID% ^
                         ${NAME_APP}:${version}
                     """
                 }
