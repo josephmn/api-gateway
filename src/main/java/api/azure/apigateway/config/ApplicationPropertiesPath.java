@@ -1,12 +1,17 @@
 package api.azure.apigateway.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
-
+/**
+ * ApplicationPropertiesPath.
+ *
+ * @author Joseph Magallanes
+ * @since 2025-08-02
+ */
 @Getter
 @Setter
 @Configuration
@@ -15,6 +20,9 @@ public class ApplicationPropertiesPath {
     private List<String> publicPaths;
     private List<PrivatePath> privatePaths;
 
+    /**
+     * PrivatePath.
+     */
     @Getter
     @Setter
     public static class PrivatePath {

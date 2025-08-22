@@ -45,7 +45,7 @@
             <property name="allowMissingPropertyJavadoc" value="true"/>
             <property name="allowedAnnotations" value="Override,Inject,Provides"/>
             <property name="scope" value="public"/>
-            <property name="ignoreMethodNamesRegex" value="^(is|find|exists|reg|log|get|update|delete|set|remove|add|new|create|main).*$"/>
+            <property name="ignoreMethodNamesRegex" value="^(is|find|exists|reg|log|get|save|update|delete|set|remove|add|new|create|main).*$"/>
         </module>
         <module name="MissingJavadocPackage"/>
         <!-- agregar comentarios a las clases -->

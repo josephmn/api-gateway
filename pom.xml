@@ -45,14 +45,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
-
-		<!-- Security - Start -->
-		<!-- Spring Boot Starter Security (para JWT) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
+        <!-- JWT (firmar/validar) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
@@ -76,7 +78,17 @@
 			<version>${jjwt.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- Security - End -->
+
+        <!-- R2DBC + PostgreSQL -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
 		<!-- SpringDoc Starter-webflux -->
 		<dependency>
@@ -84,6 +96,8 @@
 			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
 			<version>2.8.9</version>
 		</dependency>
+
+        <!-- Dependencies Cloud -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gateway-server-webflux</artifactId>
@@ -144,6 +158,18 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+            <!-- Forzar versiones únicas -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>33.0.0-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.23.0</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -155,6 +181,46 @@
 			</resource>
 		</resources>
 		<plugins>
+            <!-- Maven Enforce Plugin (para evitar versiones incompatibles o duplicadas.) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <dependencyConvergence/>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Checkstyle Plugin (para validar el estilo de código) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configLocation>${project.basedir}/src/main/resources/checkstyle.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -191,46 +257,6 @@
 			<id>release</id>
 			<build>
 				<plugins>
-					<!-- Maven Enforce Plugin (para evitar versiones incompatibles o duplicadas.) -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-enforcer-plugin</artifactId>
-						<version>3.3.0</version>
-						<executions>
-							<execution>
-								<id>enforce</id>
-								<goals>
-									<goal>enforce</goal>
-								</goals>
-								<configuration>
-									<rules>
-										<dependencyConvergence/>
-									</rules>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<!-- Checkstyle Plugin (para validar el estilo de código) -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-checkstyle-plugin</artifactId>
-						<version>3.6.0</version>
-						<executions>
-							<execution>
-								<id>validate</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<configLocation>${project.basedir}/src/main/resources/checkstyle.xml</configLocation>
-							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
-							<linkXRef>false</linkXRef>
-						</configuration>
-					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
