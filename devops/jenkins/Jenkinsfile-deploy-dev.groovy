@@ -22,6 +22,11 @@ pipeline {
         VAULT_SERVER = "vault-server"
         VAULT_ROLE_ID = credentials('vault-role-id')
         VAULT_SECRET_ID = credentials('vault-secret-id')
+//        BDSQL_HOST = "db_postgres"
+//        BDSQL_PORT = 5432
+//        BDSQL_DATABASE = "gateway"
+//        BDSQL_USERNAME = credentials('USER_POSTGRES')
+//        BDSQL_PASSWORD = credentials('PASSWORD_POSTGRES')
     }
 
     stages {
@@ -80,9 +85,7 @@ pipeline {
                     -Dspring-boot.run.profiles=dev \
                     -DVAULT_HOST=localhost \
                     -DVAULT_PORT=8200 \
-                    -DCONFIG_SERVER=http://localhost:${PORT_CONFIG_SERVER} \
-                    -DVAULT_ROLE_ID=%VAULT_ROLE_ID% \
-                    -DVAULT_ROLE_ID=%VAULT_ROLE_ID%
+                    -DCONFIG_SERVER=http://localhost:${PORT_CONFIG_SERVER}
                 """
             }
         }

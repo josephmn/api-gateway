@@ -37,7 +37,7 @@ public class SecurityConfig {
      * @since 2025-08-21
      */
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, ApplicationPropertiesPath props) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, PropertiesPath props) {
         return http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)

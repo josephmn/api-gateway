@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class GatewayConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final ApplicationPropertiesPath applicationPropertiesPath;
+    private final PropertiesPath applicationPropertiesPath;
 
     /**
      * Configuración de rutas del API Gateway.
@@ -55,14 +55,14 @@ public class GatewayConfig {
      */
     private void configurePublicRoutes(RouteLocatorBuilder.Builder routes) {
         // Ruta específica para auth-service
-        routes.route("auth-service", r -> r
-            .path("/auth/**")
-            .uri("lb://auth-service"));
+//        routes.route("auth-service", r -> r
+//            .path("/auth/**")
+//            .uri("lb://auth-service"));
 
         // Ruta específica para actuator
-        routes.route("actuator", r -> r
-            .path("/actuator/**")
-            .uri("http://localhost:8090"));
+//        routes.route("actuator", r -> r
+//            .path("/actuator/**")
+//            .uri("http://localhost:8090"));
 
         // Puedes agregar más rutas públicas específicas aquí si las necesitas
     }

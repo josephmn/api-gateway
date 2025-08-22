@@ -16,7 +16,7 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "jwt")
 @Getter
 @Setter
-public class ApplicationPropertiesJwt {
+public class PropertiesJwt {
     private String secret;
     private Duration expiration;
 }

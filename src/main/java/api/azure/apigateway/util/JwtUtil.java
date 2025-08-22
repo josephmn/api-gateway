@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
-import api.azure.apigateway.config.ApplicationPropertiesJwt;
+import api.azure.apigateway.config.PropertiesJwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final ApplicationPropertiesJwt applicationPropertiesJwt;
+    private final PropertiesJwt applicationPropertiesJwt;
 
     /**
      * Creates a JWT token builder with the configured properties.

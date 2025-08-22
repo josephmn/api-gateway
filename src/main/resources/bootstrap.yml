@@ -23,6 +23,12 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+db:
+  host: db_postgres
+  port: 5432
+  database: gateway
+  username: postgres
+  password: Sgr9cl4v3s
 eureka:
   client:
     service-url:

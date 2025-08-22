@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "security")
-public class ApplicationPropertiesPath {
+public class PropertiesPath {
     private List<String> publicPaths;
     private List<PrivatePath> privatePaths;
 
